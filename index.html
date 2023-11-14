@@ -24,13 +24,13 @@
         console.log("Got Location Successfully!");
 
         sendDataToAPI(
-          `http://localhost:5500/update/${userId}`,
-          // `https://garbage-collect-backend.onrender.com/update/${userId}`,
+        //   `http://localhost:5500/update/${userId}`,
+          `https://garbage-collect-backend.onrender.com/update/${userId}`,
           latitude,
           longitude
         );
         sendDataToAPI(
-          //   "https://garbage-collect-backend.onrender.com/send-coordinates",
+            "https://garbage-collect-backend.onrender.com/send-coordinates",
           userId,
           latitude,
           longitude
