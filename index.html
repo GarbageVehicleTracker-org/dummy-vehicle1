@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Tracker</title>
+</head>
+<body>
+    <h1>Location Tracker v3</h1>
+    <h2 id="log">hh </h2>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(sendLocations);
+            } else {
+                console.error("Error: Geolocation not supported");
+            }
+        }
+
+        function sendLocations(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const userId = "user1";
+            console.log("Got Location Successfully!");
+            
+            sendDataToAPI("https://garbage-collect-backend.onrender.com/update", userId, latitude, longitude);
+            sendDataToAPI("https://garbage-collect-backend.onrender.com/send-coordinates", userId, latitude, longitude);
+        }
+
+        function sendDataToAPI(apiEndpoint, userId, latitude, longitude) {
+            const xhr = new XMLHttpRequest();
+
+            const data = {
+                userId: userId,
+                latitude: latitude,
+                longitude: longitude,
+            };
+            const jsonData = JSON.stringify(data);
+            xhr.open("POST", apiEndpoint, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(jsonData);
+
+            console.log(`Data Sent to ${apiEndpoint}!`);
+            console.log(data);
+            document.getElementById('log').innerText = `Lat: ${latitude} || Long: ${longitude}`;
+        }
+
+        setInterval(getLocation, 1000);
+    </script>
+</body>
+</html>
+
