@@ -4,52 +4,89 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Location Tracker</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      label {
+        margin-top: 10px;
+        font-size: 16px;
+      }
+
+      select {
+        padding: 8px;
+        font-size: 14px;
+      }
+
+      #log {
+        margin-top: 20px;
+        font-size: 18px;
+        color: #007bff;
+      }
+    </style>
   </head>
   <body>
-    <h1>Location Tracker v3</h1>
+    <h1>Location Tracker v4</h1>
+    <label for="userIdSelect">Choose User:</label>
+    <select id="userIdSelect">
+      <option value="Rahul">Rahul</option>
+      <option value="Surajit">Surajit</option>
+      <option value="Priyam">Priyam</option>
+      <option value="Deep">Deep</option>
+    </select>
     <h2 id="log">hh</h2>
     <script>
       function getLocation() {
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(sendLocations);
+          navigator.geolocation.getCurrentPosition(sendLocation);
         } else {
           console.error("Error: Geolocation not supported");
         }
       }
 
-      function sendLocations(position) {
+      function sendLocation(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        const userId = "user1";
+        const userId = document.getElementById("userIdSelect").value;
         console.log("Got Location Successfully!");
-
         sendDataToAPI(
-        //   `http://localhost:5500/update/${userId}`,
           `https://garbage-collect-backend.onrender.com/update/${userId}`,
           latitude,
           longitude
         );
         sendDataToAPI(
-            "https://garbage-collect-backend.onrender.com/send-coordinates",
-          userId,
+          "https://garbage-collect-backend.onrender.com/send-coordinates",
           latitude,
-          longitude
+          longitude,
+          userId
         );
       }
 
-      function sendDataToAPI(apiEndpoint, userId, latitude, longitude) {
+      function sendDataToAPI(apiEndpoint, latitude, longitude, userId) {
         const xhr = new XMLHttpRequest();
 
         const data = {
-          userId: userId,
           latitude: latitude,
           longitude: longitude,
+          userId: userId,
         };
         const jsonData = JSON.stringify(data);
         xhr.open("POST", apiEndpoint, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(jsonData);
-
         console.log(`Data Sent to ${apiEndpoint}!`);
         console.log(data);
         document.getElementById(
