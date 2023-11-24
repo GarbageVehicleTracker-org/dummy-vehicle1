@@ -40,15 +40,33 @@
   </head>
   <body>
     <h1>Location Tracker v4</h1>
-    <label for="userIdSelect">Choose User:</label>
-    <select id="userIdSelect">
-      <option value="rahul">Rahul</option>
-      <option value="surajit">Surajit</option>
-      <option value="priyam">Priyam</option>
-      <option value="deep">Deep</option>
-    </select>
+    <label for="vehicleIdSelect">Choose Vehicle:</label>
+    <select id="vehicleIdSelect"></select>
     <h2 id="log">hh</h2>
     <script>
+      function populateVehicleOptions(vehicleData) {
+        const selectElement = document.getElementById("vehicleIdSelect");
+        
+        vehicleData.forEach((vehicle) => {
+          const option = document.createElement("option");
+          option.value = vehicle.id;
+          option.textContent = vehicle.id;
+          selectElement.appendChild(option);
+        });
+      }
+
+      function getVehicleData() {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            const vehicleData = JSON.parse(xhr.responseText);
+            populateVehicleOptions(vehicleData);
+          }
+        };
+        xhr.open("GET", "https://garbage-collect-backend.onrender.com/get-vehicle", true);
+        xhr.send();
+      }
+
       function getLocation() {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(sendLocation);
@@ -60,10 +78,10 @@
       function sendLocation(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        const userId = document.getElementById("userIdSelect").value;
+        const vehicleId = document.getElementById("vehicleIdSelect").value;
         console.log("Got Location Successfully!");
         sendDataToAPI(
-          `https://garbage-collect-backend.onrender.com/update/${userId}`,
+          `https://garbage-collect-backend.onrender.com/update/${vehicleId}`,
           latitude,
           longitude
         );
@@ -71,17 +89,17 @@
           "https://garbage-collect-backend.onrender.com/send-coordinates",
           latitude,
           longitude,
-          userId
+          vehicleId
         );
       }
 
-      function sendDataToAPI(apiEndpoint, latitude, longitude, userId) {
+      function sendDataToAPI(apiEndpoint, latitude, longitude, vehicleId) {
         const xhr = new XMLHttpRequest();
 
         const data = {
           latitude: latitude,
           longitude: longitude,
-          userId: userId,
+          vehicleId: vehicleId,
         };
         const jsonData = JSON.stringify(data);
         xhr.open("POST", apiEndpoint, true);
@@ -95,6 +113,7 @@
       }
 
       setInterval(getLocation, 1000);
+      getVehicleData(); // Fetch vehicle data when the page loads
     </script>
   </body>
 </html>
