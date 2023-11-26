@@ -46,7 +46,7 @@
     <script>
       function populateVehicleOptions(vehicleData) {
         const selectElement = document.getElementById("vehicleIdSelect");
-        
+
         vehicleData.forEach((vehicle) => {
           const option = document.createElement("option");
           option.value = vehicle.id;
@@ -63,7 +63,11 @@
             populateVehicleOptions(vehicleData);
           }
         };
-        xhr.open("GET", "https://garbage-collect-backend.onrender.com/get-vehicle", true);
+        xhr.open(
+          "GET",
+          "https://garbage-collect-backend.onrender.com/get-vehicle",
+          true
+        );
         xhr.send();
       }
 
@@ -90,6 +94,11 @@
           latitude,
           longitude,
           vehicleId
+        );
+        sendDataToAPI(
+          `https://garbage-collect-backend.onrender.com/send-real-coordinates/${vehicleId}`,
+          latitude,
+          longitude
         );
       }
 
