@@ -85,18 +85,18 @@
         const vehicleId = document.getElementById("vehicleIdSelect").value;
         console.log("Got Location Successfully!");
         sendDataToAPI(
-          `https://garbage-collect-backend.onrender.com/update/${vehicleId}`,
+          `https://garbage-collect-backend2.onrender.com/update/${vehicleId}`,
           latitude,
           longitude
         );
         sendDataToAPI(
-          "https://garbage-collect-backend.onrender.com/send-coordinates",
+          "https://garbage-collect-backend2.onrender.com/send-coordinates",
           latitude,
           longitude,
           vehicleId
         );
         sendDataToAPI(
-          `https://garbage-collect-backend.onrender.com/send-real-coordinates/${vehicleId}`,
+          `https://garbage-collect-backend2.onrender.com/send-real-coordinates/${vehicleId}`,
           latitude,
           longitude
         );
