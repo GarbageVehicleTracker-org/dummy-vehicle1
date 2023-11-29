@@ -41,62 +41,77 @@
   <body>
     <h1>Location Tracker v4</h1>
     <label for="vehicleIdSelect">Choose Vehicle:</label>
-    <select id="vehicleIdSelect"></select>
+    <select id="vehicleIdSelect">
+      <option value="WB7777655">WB7777655</option>
+      <option value="UP68A2395">UP68A2395</option>
+      <option value="UP65655">UP65655</option>
+      <option value="KN65655">KN65655</option>
+      <option value="JK863285">JK863285</option>
+    </select>
+
     <h2 id="log">hh</h2>
     <script>
-      function populateVehicleOptions(vehicleData) {
-        const selectElement = document.getElementById("vehicleIdSelect");
+      //     function populateVehicleOptions(vehicleData) {
+      //   const selectElement = document.getElementById("vehicleIdSelect");
 
-        vehicleData.forEach((vehicle) => {
-          const option = document.createElement("option");
-          option.value = vehicle.id;
-          option.textContent = vehicle.id;
-          selectElement.appendChild(option);
-        });
-      }
+      //   vehicleData.forEach((vehicle) => {
+      //     const option = document.createElement("option");
+      //     option.value = vehicle.id;
+      //     option.textContent = vehicle.id;
+      //     selectElement.appendChild(option);
+      //   });
+      // }
 
-      function getVehicleData() {
-        const xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState == 4 && xhr.status == 200) {
-            const vehicleData = JSON.parse(xhr.responseText);
-            populateVehicleOptions(vehicleData);
-          }
-        };
-        xhr.open(
-          "GET",
-          "https://garbage-collect-backend2.onrender.com/get-vehicle",
-          true
-        );
-        xhr.send();
-      }
+      // function getVehicleData() {
+      //   const xhr = new XMLHttpRequest();
+      //   xhr.onreadystatechange = function () {
+      //     if (xhr.readyState == 4 && xhr.status == 200) {
+      //       const vehicleData = JSON.parse(xhr.responseText);
+      //       populateVehicleOptions(vehicleData);
+      //     }
+      //   };
+      //   xhr.open(
+      //     "GET",
+      //     "https://garbage-collect-backend2.onrender.com/get-vehicle",
+      //     true
+      //   );
+      //   xhr.send();
+      // }
 
       function getLocation() {
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(sendLocation);
+          navigator.geolocation.getCurrentPosition(
+            sendLocation,
+            handleGeolocationError
+          );
         } else {
           console.error("Error: Geolocation not supported");
         }
+      }
+
+      function handleGeolocationError(error) {
+        console.error(`Geolocation error: ${error.message}`);
       }
 
       function sendLocation(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         const vehicleId = document.getElementById("vehicleIdSelect").value;
+
         console.log("Got Location Successfully!");
         sendDataToAPI(
-          `https://garbage-collect-backend2.onrender.com/update/${vehicleId}`,
+          `https://garbage-collect-backend.onrender.com/update/${vehicleId}`,
           latitude,
           longitude
         );
         sendDataToAPI(
-          "https://garbage-collect-backend2.onrender.com/send-coordinates",
+          "https://garbage-collect-backend.onrender.com/send-coordinates",
           latitude,
           longitude,
           vehicleId
         );
         sendDataToAPI(
-          `https://garbage-collect-backend2.onrender.com/send-real-coordinates/${vehicleId}`,
+          `https://garbage-collect-backend.onrender.com/send-real-coordinates/${vehicleId}`,
           latitude,
           longitude
         );
@@ -111,14 +126,26 @@
           vehicleId: vehicleId,
         };
         const jsonData = JSON.stringify(data);
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+              console.log(`Data Sent to ${apiEndpoint}!`);
+              console.log(data);
+              document.getElementById(
+                "log"
+              ).innerText = `Lat: ${latitude} || Long: ${longitude}`;
+            } else {
+              console.error(
+                `Error sending data to ${apiEndpoint}. Status: ${xhr.status}`
+              );
+            }
+          }
+        };
+
         xhr.open("POST", apiEndpoint, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(jsonData);
-        console.log(`Data Sent to ${apiEndpoint}!`);
-        console.log(data);
-        document.getElementById(
-          "log"
-        ).innerText = `Lat: ${latitude} || Long: ${longitude}`;
       }
 
       setInterval(getLocation, 1000);
